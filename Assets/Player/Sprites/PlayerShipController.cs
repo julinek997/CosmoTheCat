@@ -7,33 +7,45 @@ public class PlayerShipController : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firePoint;
 
-private void Update()
-{
-    float moveInput = Input.GetAxis("Vertical");
-    Vector2 movement = transform.up * moveInput * speed * Time.deltaTime;
-    transform.Translate(movement);
-
-    float rotateInput = Input.GetAxis("Horizontal");
-    transform.Rotate(Vector3.back * rotateInput * rotationSpeed * Time.deltaTime);
-
-    // Check if the player is out of screen bounds
-    CheckBounds();
-
-    if (Input.GetKeyDown(KeyCode.Space))
+    void Update()
     {
-        Shoot();
-    }
-}
+        float moveInput = Input.GetAxis("Vertical");
+        Vector2 movement = transform.up * moveInput * speed * Time.deltaTime;
+        transform.Translate(movement);
 
-void CheckBounds()
-{
-    Vector3 viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
-    if (viewportPosition.y < 0) 
-    {
-        Vector3 newPosition = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1.1f, 0));
-        transform.position = newPosition;
+        float rotateInput = Input.GetAxis("Horizontal");
+        transform.Rotate(Vector3.back * rotateInput * rotationSpeed * Time.deltaTime);
+
+        CheckBounds();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Shoot();
+        }
     }
-}
+
+    void CheckBounds()
+    {
+        Vector3 viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
+
+        if (viewportPosition.x < 0) 
+        {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, viewportPosition.y, 0));
+        }
+        else if (viewportPosition.x > 1) 
+        {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f, viewportPosition.y, 0));
+        }
+
+        if (viewportPosition.y < 0) 
+        {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(viewportPosition.x, 1.1f, 0));
+        }
+        else if (viewportPosition.y > 1) 
+        {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(viewportPosition.x, -0.1f, 0));
+        }
+    }
 
     void Shoot()
     {
