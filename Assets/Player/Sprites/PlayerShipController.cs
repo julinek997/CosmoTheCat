@@ -7,6 +7,8 @@ public class PlayerShipController : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firePoint;
     public Vector3 startingPosition = new Vector3(0, 0, 0); 
+    public float bulletForce = 20f;
+    public float bulletLifetime = 3f;
     void Start()
     {
         transform.position = startingPosition;
@@ -20,8 +22,6 @@ public class PlayerShipController : MonoBehaviour
 
         float rotateInput = Input.GetAxis("Horizontal");
         transform.Rotate(Vector3.back * rotateInput * rotationSpeed * Time.deltaTime);
-
-        CheckBounds();
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -52,8 +52,24 @@ public class PlayerShipController : MonoBehaviour
         }
     }
 
+
     void Shoot()
     {
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        // Instantiate a bullet at the firePoint position with the same rotation as the firePoint
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        // Get the bullet's Rigidbody component
+        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            // Apply force to the bullet in the direction of its forward vector
+            rb.AddForce(bullet.transform.up * bulletForce, ForceMode2D.Impulse);
+        }
+        else
+        {
+            Debug.LogWarning("Bullet prefab is missing Rigidbody2D component.");
+        }
+        
+        Destroy(bullet, bulletLifetime);
     }
 }
