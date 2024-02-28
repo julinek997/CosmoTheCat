@@ -6,6 +6,11 @@ public class PlayerShipController : MonoBehaviour
     public float rotationSpeed = 200f;
     public GameObject bulletPrefab;
     public Transform firePoint;
+    public Vector3 startingPosition = new Vector3(0, 0, 0); 
+    void Start()
+    {
+        transform.position = startingPosition;
+    }
 
     void Update()
     {

@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    public GameObject[] asteroidPrefabs; // Array to hold multiple asteroid prefabs
+    public GameObject[] asteroidPrefabs; 
     public int numberOfAsteroids = 5;
     public float spawnRadius = 10f;
+    public Vector2 spawnBounds = new Vector2(20f, 20f);
+    public Vector3 scale = new Vector3(50f, 50f, 50f); 
 
     void Start()
     {
@@ -13,17 +15,21 @@ public class AsteroidSpawner : MonoBehaviour
 
     void SpawnAsteroids()
     {
+        Vector2 spawnPoint = new Vector2(-11f, -11f);
+
         for (int i = 0; i < numberOfAsteroids; i++)
         {
-            // Generate a random position within the spawn radius
-            Vector2 randomPosition = Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0f);
+            Vector2 randomPosition = new Vector2(Random.Range(0, spawnBounds.x), Random.Range(0, spawnBounds.y));
 
-            // Randomly choose an asteroid prefab from the array
+            randomPosition = Vector2.ClampMagnitude(randomPosition, spawnRadius);
+
+            Vector3 spawnPosition = (Vector3)spawnPoint + new Vector3(randomPosition.x, randomPosition.y, 0f);
+
             GameObject asteroidPrefab = asteroidPrefabs[Random.Range(0, asteroidPrefabs.Length)];
 
-            // Instantiate the asteroid prefab at the random position
-            Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+            GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+
+            asteroid.transform.localScale = scale;
         }
     }
 }
