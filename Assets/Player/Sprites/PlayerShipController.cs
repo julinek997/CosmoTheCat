@@ -9,9 +9,12 @@ public class PlayerShipController : MonoBehaviour
     public Vector3 startingPosition = new Vector3(0, 0, 0); 
     public float bulletForce = 20f;
     public float bulletLifetime = 3f;
+    public AudioClip shootSound; 
+    private AudioSource audioSource;
     void Start()
     {
         transform.position = startingPosition;
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -55,14 +58,11 @@ public class PlayerShipController : MonoBehaviour
 
     void Shoot()
     {
-        // Instantiate a bullet at the firePoint position with the same rotation as the firePoint
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
 
-        // Get the bullet's Rigidbody component
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            // Apply force to the bullet in the direction of its forward vector
             rb.AddForce(bullet.transform.up * bulletForce, ForceMode2D.Impulse);
         }
         else
@@ -71,5 +71,10 @@ public class PlayerShipController : MonoBehaviour
         }
         
         Destroy(bullet, bulletLifetime);
+        
+        if (shootSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
     }
 }
