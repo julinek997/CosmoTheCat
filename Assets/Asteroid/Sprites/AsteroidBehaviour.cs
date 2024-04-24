@@ -32,6 +32,7 @@ public class AsteroidBehaviour : MonoBehaviour
             }
 
             Destroy(gameObject);
+            FindObjectOfType<AsteroidCounter>().IncrementDestroyedAsteroids();
         }
     }
 }

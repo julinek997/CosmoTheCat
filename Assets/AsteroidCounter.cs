@@ -1,15 +1,27 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AsteroidCounter : MonoBehaviour
 {
-    private int destroyedAsteroidsCount = 0;
-    public int DestroyedAsteroidsCount
+    private int destroyedAsteroids = 0;
+    public Text counterText; 
+
+    public void IncrementDestroyedAsteroids()
     {
-        get { return destroyedAsteroidsCount; }
+        destroyedAsteroids++;
+        UpdateCounterText();
     }
-    
-    public void IncrementDestroyedAsteroidsCount()
+
+    public int GetDestroyedAsteroidsCount()
     {
-        destroyedAsteroidsCount++;
+        return destroyedAsteroids;
+    }
+
+    private void UpdateCounterText()
+    {
+        if (counterText != null)
+        {
+            counterText.text = "Destroyed Asteroids: " + destroyedAsteroids;
+        }
     }
 }
