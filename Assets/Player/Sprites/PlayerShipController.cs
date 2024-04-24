@@ -11,6 +11,7 @@ public class PlayerShipController : MonoBehaviour
     public float bulletLifetime = 3f;
     public AudioClip shootSound; 
     private AudioSource audioSource;
+
     void Start()
     {
         transform.position = startingPosition;
@@ -32,29 +33,14 @@ public class PlayerShipController : MonoBehaviour
         }
     }
 
-    void CheckBounds()
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector3 viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
-
-        if (viewportPosition.x < 0) 
+        if (collision.gameObject.CompareTag("Asteroid"))
         {
-            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, viewportPosition.y, 0));
-        }
-        else if (viewportPosition.x > 1) 
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f, viewportPosition.y, 0));
-        }
-
-        if (viewportPosition.y < 0) 
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(viewportPosition.x, 1.1f, 0));
-        }
-        else if (viewportPosition.y > 1) 
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(viewportPosition.x, -0.1f, 0));
+            Debug.Log("Collision with asteroid detected");
+            Destroy(gameObject);
         }
     }
-
 
     void Shoot()
     {
