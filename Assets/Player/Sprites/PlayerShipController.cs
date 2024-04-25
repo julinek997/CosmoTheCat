@@ -10,14 +10,21 @@ public class PlayerShipController : MonoBehaviour
     public float bulletForce = 20f;
     public float bulletLifetime = 3f;
     public AudioClip shootSound; 
+    public AudioClip powerUpSound;
     private AudioSource audioSource;
     private bool hasTripleShot = false;
     private float tripleShotDuration = 0f;
 
-    void Start()
+ void Start()
     {
         FindValidSpawnPosition();
         audioSource = GetComponent<AudioSource>();
+
+        if (FindObjectOfType<DefeatScreenManager>() == null)
+        {
+            GameObject defeatScreenManagerObj = new GameObject("DefeatScreenManager");
+            defeatScreenManagerObj.AddComponent<DefeatScreenManager>();
+        }
     }
 
 void FindValidSpawnPosition()
@@ -75,11 +82,16 @@ void FindValidSpawnPosition()
         {
             Debug.Log("PowerUp detected");
             EnableTripleShot(); 
+            if (powerUpSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(powerUpSound);
+            }
             Destroy(collision.gameObject); 
         }
         else if (collision.gameObject.CompareTag("Asteroid"))
         {
             Debug.Log("Collision with asteroid detected");
+            FindObjectOfType<DefeatScreenManager>().ShowDefeatScreen();
             Destroy(gameObject);
         }
     }

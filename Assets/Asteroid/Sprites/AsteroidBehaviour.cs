@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class AsteroidBehaviour : MonoBehaviour
 {
-    public AudioClip destructionSound; 
-    private AudioSource audioSource; 
+    public AudioClip destructionSound;
+    private AudioSource audioSource;
 
     public float minSpeed = 1f;
     public float maxSpeed = 5f;
@@ -11,6 +11,11 @@ public class AsteroidBehaviour : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
         float speed = Random.Range(minSpeed, maxSpeed);
         Vector2 direction = Random.insideUnitCircle.normalized;
         transform.Translate(direction * speed * Time.deltaTime);
@@ -22,11 +27,10 @@ public class AsteroidBehaviour : MonoBehaviour
         {
             if (destructionSound != null && audioSource != null)
             {
-                
                 if (!audioSource.enabled)
-            {
-                audioSource.enabled = true;
-            }
+                {
+                    audioSource.enabled = true;
+                }
 
                 audioSource.PlayOneShot(destructionSound);
             }
