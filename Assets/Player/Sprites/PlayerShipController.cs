@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class PlayerShipController : MonoBehaviour
 {
     public float speed = 5f;
@@ -91,8 +91,8 @@ void FindValidSpawnPosition()
         else if (collision.gameObject.CompareTag("Asteroid"))
         {
             Debug.Log("Collision with asteroid detected");
-            FindObjectOfType<DefeatScreenManager>().ShowDefeatScreen();
             Destroy(gameObject);
+            SceneManager.LoadScene(2);
         }
     }
 
