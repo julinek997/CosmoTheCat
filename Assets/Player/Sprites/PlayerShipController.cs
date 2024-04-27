@@ -13,10 +13,13 @@ public class PlayerShipController : MonoBehaviour
     public AudioClip powerUpSound;
     private AudioSource audioSource;
     private bool hasTripleShot = false;
+    public int powerUpPoints = 5;
     private float tripleShotDuration = 0f;
+    public ScoreManager scoreManager;
 
  void Start()
     {
+        Debug.Log("ScoreManager reference: " + scoreManager);
         FindValidSpawnPosition();
         audioSource = GetComponent<AudioSource>();
 
@@ -76,25 +79,35 @@ void FindValidSpawnPosition()
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+void OnCollisionEnter2D(Collision2D collision)
+{
+    if (collision.gameObject.CompareTag("PowerUp"))
     {
-        if (collision.gameObject.CompareTag("PowerUp"))
+        Debug.Log("PowerUp detected");
+        EnableTripleShot(); 
+        if (powerUpSound != null && audioSource != null)
         {
-            Debug.Log("PowerUp detected");
-            EnableTripleShot(); 
-            if (powerUpSound != null && audioSource != null)
-            {
-                audioSource.PlayOneShot(powerUpSound);
-            }
-            Destroy(collision.gameObject); 
+            audioSource.PlayOneShot(powerUpSound);
         }
-        else if (collision.gameObject.CompareTag("Asteroid"))
+        Destroy(collision.gameObject); 
+
+        if (scoreManager != null)
         {
-            Debug.Log("Collision with asteroid detected");
-            Destroy(gameObject);
-            SceneManager.LoadScene(2);
+            Debug.Log("Adding points");
+            scoreManager.AddScore(powerUpPoints); 
+        }
+        else
+        {
+            Debug.LogError("ScoreManager reference is null");
         }
     }
+    else if (collision.gameObject.CompareTag("Asteroid"))
+    {
+        Debug.Log("Collision with asteroid detected");
+        Destroy(gameObject);
+        SceneManager.LoadScene(2);
+    }
+}
 
  void Shoot()
     {

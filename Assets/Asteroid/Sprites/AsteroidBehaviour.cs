@@ -1,10 +1,14 @@
+// AsteroidBehaviour.cs
 using UnityEngine;
 
 public class AsteroidBehaviour : MonoBehaviour
 {
+    public ScoreManager scoreManager;
+
     public AudioClip destructionSound;
     private AudioSource audioSource;
 
+    public int asteroidPoints = 10;
     public float minSpeed = 1f;
     public float maxSpeed = 5f;
 
@@ -36,7 +40,8 @@ public class AsteroidBehaviour : MonoBehaviour
             }
 
             Destroy(gameObject);
-            FindObjectOfType<AsteroidCounter>().IncrementDestroyedAsteroids();
+
+            scoreManager.AddScore(asteroidPoints); 
         }
     }
 }
