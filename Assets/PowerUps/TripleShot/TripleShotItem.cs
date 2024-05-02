@@ -6,6 +6,7 @@ public class TripleShotItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Triple Shot Power-up picked up");
             Destroy(gameObject); 
         }
     }

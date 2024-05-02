@@ -1,36 +1,44 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
 public class PlayerShipController : MonoBehaviour
 {
     public float speed = 5f;
+    private float normalSpeed;
     public float rotationSpeed = 200f;
     public GameObject bulletPrefab;
     public Transform firePoint;
-    public Vector3 startingPosition = new Vector3(0, 0, 0); 
+    public Vector3 startingPosition = new Vector3(0, 0, 0);
     public float bulletForce = 20f;
     public float bulletLifetime = 3f;
-    public AudioClip shootSound; 
+    public AudioClip shootSound;
     public AudioClip powerUpSound;
     private AudioSource audioSource;
     private bool hasTripleShot = false;
+    private bool hasDoubleSpeed = false;
     public int powerUpPoints = 5;
     private float tripleShotDuration = 0f;
+    private float doubleSpeedDuration = 0f;
     public ScoreManager scoreManager;
+    public DoubleSpeedItem doubleSpeedItem; // Add this field
 
- void Start()
+    void Start()
     {
         Debug.Log("ScoreManager reference: " + scoreManager);
         FindValidSpawnPosition();
         audioSource = GetComponent<AudioSource>();
+        normalSpeed = speed;
 
         if (FindObjectOfType<DefeatScreenManager>() == null)
         {
             GameObject defeatScreenManagerObj = new GameObject("DefeatScreenManager");
             defeatScreenManagerObj.AddComponent<DefeatScreenManager>();
         }
+        doubleSpeedItem = FindObjectOfType<DoubleSpeedItem>();
     }
 
-void FindValidSpawnPosition()
+    void FindValidSpawnPosition()
     {
         Collider2D[] obstacles = Physics2D.OverlapCircleAll(transform.position, 5f, LayerMask.GetMask("Asteroid", "PowerUp"));
         Vector3 spawnPosition = Vector3.zero;
@@ -55,7 +63,7 @@ void FindValidSpawnPosition()
 
         transform.position = spawnPosition;
     }
-    
+
     void Update()
     {
         float moveInput = Input.GetAxis("Vertical");
@@ -69,6 +77,7 @@ void FindValidSpawnPosition()
         {
             Shoot();
         }
+
         if (hasTripleShot)
         {
             tripleShotDuration -= Time.deltaTime;
@@ -77,28 +86,38 @@ void FindValidSpawnPosition()
                 DisableTripleShot();
             }
         }
+
+        if (hasDoubleSpeed)
+        {
+            doubleSpeedDuration -= Time.deltaTime;
+            if (doubleSpeedDuration <= 0f)
+            {
+                DisableDoubleSpeed();
+            }
+        }
     }
 
-void OnCollisionEnter2D(Collision2D collision)
+ void OnCollisionEnter2D(Collision2D collision)
 {
     if (collision.gameObject.CompareTag("PowerUp"))
     {
-        Debug.Log("PowerUp detected");
-        EnableTripleShot(); 
+        Debug.Log("Power-up Collision detected");
+
         if (powerUpSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(powerUpSound);
         }
-        Destroy(collision.gameObject); 
+        Destroy(collision.gameObject);
 
-        if (scoreManager != null)
+        if (collision.gameObject.GetComponent<TripleShotItem>() != null)
         {
-            Debug.Log("Adding points");
-            scoreManager.AddScore(powerUpPoints); 
+            Debug.Log("Triple Shot Power-up picked up");
+            EnableTripleShot();
         }
-        else
+        else if (collision.gameObject.GetComponent<DoubleSpeedItem>() != null)
         {
-            Debug.LogError("ScoreManager reference is null");
+            Debug.Log("Double Speed Power-up picked up");
+            EnableDoubleSpeed(doubleSpeedItem.duration); 
         }
     }
     else if (collision.gameObject.CompareTag("Asteroid"))
@@ -109,7 +128,7 @@ void OnCollisionEnter2D(Collision2D collision)
     }
 }
 
- void Shoot()
+    void Shoot()
     {
         if (hasTripleShot)
         {
@@ -158,13 +177,36 @@ void OnCollisionEnter2D(Collision2D collision)
             audioSource.PlayOneShot(shootSound);
         }
     }
+
     public void EnableTripleShot()
     {
         hasTripleShot = true;
         tripleShotDuration = 10f;
+        Debug.Log("Triple Shot Enabled: " + hasTripleShot);
     }
+
     void DisableTripleShot()
     {
         hasTripleShot = false;
+    }
+    
+    public void EnableDoubleSpeed(float duration)
+    {
+        hasDoubleSpeed = true;
+        doubleSpeedDuration = duration;
+        speed *= 2f; // Double the speed
+        StartCoroutine(DisableDoubleSpeedAfter(duration));
+    }
+
+    IEnumerator DisableDoubleSpeedAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        DisableDoubleSpeed();
+    }
+
+    void DisableDoubleSpeed()
+    {
+        hasDoubleSpeed = false;
+        speed = normalSpeed; 
     }
 }

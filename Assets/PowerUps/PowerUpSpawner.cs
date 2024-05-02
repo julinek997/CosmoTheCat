@@ -1,27 +1,34 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerUpSpawner : MonoBehaviour
 {
-
     public GameObject tripleShotItemPrefab;
+    public GameObject doubleSpeedItemPrefab; 
     public float spawnDelay = 10f;
     public Vector2 spawnAreaSize = new Vector2(10f, 10f);
 
     void Start()
     {
-        StartCoroutine(SpawnTripleShotItem());
+        StartCoroutine(SpawnPowerUps());
     }
 
-    IEnumerator SpawnTripleShotItem()
+    IEnumerator SpawnPowerUps()
     {
         while (true)
         {
             yield return new WaitForSeconds(spawnDelay);
 
             Vector3 spawnPosition = GetRandomSpawnPosition();
-            Instantiate(tripleShotItemPrefab, spawnPosition, Quaternion.identity);
+            int randomIndex = Random.Range(0, 2);
+            if (randomIndex == 0)
+            {
+                Instantiate(tripleShotItemPrefab, spawnPosition, Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(doubleSpeedItemPrefab, spawnPosition, Quaternion.identity);
+            }
         }
     }
 
@@ -32,4 +39,3 @@ public class PowerUpSpawner : MonoBehaviour
         return transform.position + new Vector3(randomX, randomY, 0f);
     }
 }
-

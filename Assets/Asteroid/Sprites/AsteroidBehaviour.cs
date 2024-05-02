@@ -1,10 +1,8 @@
-// AsteroidBehaviour.cs
 using UnityEngine;
 
 public class AsteroidBehaviour : MonoBehaviour
 {
     public ScoreManager scoreManager;
-
     public AudioClip destructionSound;
     private AudioSource audioSource;
 
@@ -40,7 +38,6 @@ public class AsteroidBehaviour : MonoBehaviour
             }
 
             Destroy(gameObject);
-
             scoreManager.AddScore(asteroidPoints); 
         }
     }
