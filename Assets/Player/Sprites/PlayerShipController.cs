@@ -194,7 +194,7 @@ public class PlayerShipController : MonoBehaviour
     {
         hasDoubleSpeed = true;
         doubleSpeedDuration = duration;
-        speed *= 2f; // Double the speed
+        speed *= 2f; 
         StartCoroutine(DisableDoubleSpeedAfter(duration));
     }
 
